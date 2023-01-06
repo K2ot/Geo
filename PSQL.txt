@@ -1,0 +1,20 @@
+
+CREATE DATABASE "polandDB_xyz"
+    WITH 
+    ENCODING = 'UTF8'
+CREATE EXTENSION postgis;
+
+shp2pgsql -s 4326 -I polska.shp redlining  \
+ | psql -d polandDB_xyz -U postgres
+
+shp2pgsql -s 4326 -I wojewodztwa.shp redlining_woj  \
+| psql -U postgres -d polandDB_xyz
+
+
+CREATE TABLE punkty_w_PL(
+		id_point serial
+		, x double precision
+		, y double precision
+		, z double precision
+		, primary key(id_point)
+		);
