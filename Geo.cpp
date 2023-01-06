@@ -14,7 +14,7 @@ int main()
 		std::cerr << "B³¹d po³¹czenia z baz¹ danych: " << PQerrorMessage(conn) << std::endl;
 		return 1;
 	}
-
+	/*
 	double x = 0.0, y = 0.0, z = 0.0;
 	int i = 0;
 	while (i < NO_OF_POINTS)
@@ -35,6 +35,7 @@ int main()
 			i++;
 		}
 	}
+	*/
 
 	showPointByWoj(conn);
 
