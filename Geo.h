@@ -6,7 +6,7 @@
 #include <random>
 #include <iomanip>
 
-const int NO_OF_POINTS = 10;
+const int NO_OF_POINTS = 100;
 const int MIN_DISTANCE = 3000;
 const int MIN_X = 130000;
 const int MAX_X = 790000;
