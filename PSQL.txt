@@ -1,4 +1,3 @@
-
 CREATE DATABASE "polandDB_xyz"
     WITH 
     ENCODING = 'UTF8'
@@ -18,3 +17,4 @@ CREATE TABLE punkty_w_PL(
 		, z double precision
 		, primary key(id_point)
 		);
+
