@@ -5,7 +5,7 @@
 #include <random>
 #include <vector>
 
-const int NO_OF_POINTS = 20;
+const int NO_OF_POINTS = 2000;
 const int MIN_DISTANCE = 3000;
 
 std::mt19937 generator(time(0));
