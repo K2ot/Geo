@@ -5,14 +5,62 @@
 #include <random>
 #include <vector>
 
-const int NO_OF_POINTS = 2000;
+const int NO_OF_POINTS = 20;
 const int MIN_DISTANCE = 3000;
-const int MIN_X = 130000;
-const int MAX_X = 790000;
-const int MIN_Y = 160000;
-const int MAX_Y = 862000;
-const int MIN_Z = 0;
-const int MAX_Z = 300;
+
+std::mt19937 generator(time(0));
+
+class Point
+{
+	static const int MIN_X = 130000;
+	static const int MAX_X = 790000;
+	static const int MIN_Y = 160000;
+	static const int MAX_Y = 862000;
+	static const int MIN_Z = 0;
+	static const int MAX_Z = 300;
+
+	int x_;
+	int y_;
+	int z_;
+
+	static int RandomNum(std::mt19937& generator, int min, int max)
+	{
+		std::uniform_int_distribution<int> distribution(min, max);
+		return distribution(generator);
+	}
+
+
+public:
+	Point(int x, int y, int z)
+	{
+		x_ = x;
+		y_ = y;
+		z_ = z;
+	}
+
+	static Point randomPoint()
+	{
+		return Point(
+			RandomNum(generator, MIN_X, MAX_X),
+			RandomNum(generator, MIN_Y, MAX_Y),
+			RandomNum(generator, MIN_Z, MAX_Z));
+	}
+
+	int getX()
+	{
+		return (x_);
+	}
+
+	int getY()
+	{
+		return (y_);
+	}
+
+	int getZ()
+	{
+		return (z_);
+	}
+};
 
 class Woj
 {
@@ -39,10 +87,10 @@ public:
 	}
 };
 
-bool isPointInPL(PGconn* conn, int x, int y)
+bool isPointInPL(PGconn* conn, Point& point)
 {
 	std::stringstream ss;
-	ss << "SELECT ST_Contains(geom, ST_GeomFromText('POINT(" << x << " " << y << ")', 4326)) FROM redlining;";
+	ss << "SELECT ST_Contains(geom, ST_GeomFromText('POINT(" << point.getX() << " " << point.getY() << ")', 4326)) FROM redlining;";
 	std::string query = ss.str();
 	PGresult* res = PQexec(conn, query.c_str());
 	std::string value = PQgetvalue(res, 0, 0);
@@ -51,30 +99,25 @@ bool isPointInPL(PGconn* conn, int x, int y)
 	return (value == "t");
 }
 
-int RandomNum(std::mt19937& generator, int min, int max)
-{
-	std::uniform_int_distribution<int> distribution(min, max);
-	return distribution(generator);
-}
 
-bool testDistance(PGconn* conn, int  x, int  y) 
+bool testDistance(PGconn* conn, Point& point)
 {
-	std::stringstream ss; 
-	ss << "SELECT * FROM (SELECT ST_Distance(ST_MakePoint(" << x << ", " << y << "), ST_MakePoint(x, y)) FROM punkty_w_pl) AS q WHERE ST_Distance < " << MIN_DISTANCE << ";";
+	std::stringstream ss;
+	ss << "SELECT * FROM (SELECT ST_Distance(ST_MakePoint(" << point.getX() << ", " << point.getY() << "), ST_MakePoint(x, y)) FROM punkty_w_pl) AS q WHERE ST_Distance < " << MIN_DISTANCE << ";";
 	std::string query = ss.str();
-	PGresult* res = PQexec(conn, query.c_str()); 
+	PGresult* res = PQexec(conn, query.c_str());
 	int ntuples = PQntuples(res);
 	PQclear(res);
 	return ntuples == 0;
 }
 
-void insertPoint(PGconn* conn, int x, int y, int z) 
+void insertPoint(PGconn* conn, Point& point)
 {
-	std::stringstream ss; 
-	ss << "INSERT INTO punkty_w_pl (x, y, z) VALUES (" << x << " , " << y << " , " << z << ");";
-	
+	std::stringstream ss;
+	ss << "INSERT INTO punkty_w_pl (x, y, z) VALUES (" << point.getX() << " , " << point.getY() << " , " << point.getZ() << ");";
+
 	std::string query = ss.str();
-	PGresult* res = PQexec(conn, query.c_str()); 
+	PGresult* res = PQexec(conn, query.c_str());
 
 	PQclear(res);
 }
@@ -97,7 +140,7 @@ std::vector<Woj> getWoj(PGconn* conn)
 	return wojs;
 }
 
-void printPoints(PGconn* conn, Woj & woj)
+void printPoints(PGconn* conn, Woj& woj)
 {
 	std::stringstream ss;
 	ss << " SELECT x, y, z FROM punkty_w_pl as punkty, redlining_woj AS woj WHERE ";

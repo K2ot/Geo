@@ -5,10 +5,12 @@ const std::string USER = "postgres";
 const std::string PASSWORD = "1234";
 const std::string DBNAME = "polandDB_xyz";
 
+
+
+
 int main()
 {
 	setlocale(LC_CTYPE, "Polish");
-	std::mt19937 generator(time(0));
 
 	std::stringstream connectionString;
 	connectionString << "host=" << HOST << " user = " << USER << " password = " << PASSWORD << " dbname = " << DBNAME;
@@ -21,23 +23,22 @@ int main()
 		return 1;
 	}
 
-	//cleanDB(conn);
+	cleanDB(conn);
+
+	
 
 	int i = 0;
 	while (i < NO_OF_POINTS)
 	{ 
-		int x = 0, y = 0, z = 0;
-		x = RandomNum(generator, MIN_X, MAX_X);
-		y = RandomNum(generator, MIN_Y, MAX_Y);
-		z = RandomNum(generator, MIN_Z, MAX_Z);
-
-		if (isPointInPL(conn, x, y) == true)
+		
+		Point xyz = Point::randomPoint();
+		if (isPointInPL(conn, xyz) == true)
 		{
-			if (!testDistance(conn, x, y))
+			if (!testDistance(conn, xyz))
 			{
 				continue;
 			}
-			insertPoint(conn, x, y, z);
+			insertPoint(conn, xyz);
 			i++;
 		}
 	}
