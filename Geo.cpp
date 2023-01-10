@@ -23,9 +23,7 @@ int main()
 		return 1;
 	}
 
-	cleanDB(conn);
-
-	
+	//cleanDB(conn);
 
 	int i = 0;
 	while (i < NO_OF_POINTS)
